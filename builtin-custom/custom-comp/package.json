@@ -1,0 +1,10 @@
+{
+  "name": "custom-comp",
+  "panel": {
+    "main": "index.js",
+    "type": "dockable",
+    "title": "Simple Panel",
+    "width": 400,
+    "height": 300
+  }
+}
