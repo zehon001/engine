@@ -1,3 +1,5 @@
+# 需要先把builtin-custom目录下的所有东西拷贝到creator editor的builtin目录下
+
 # Cocos Creator Engine Framework
 
 This repo is the engine framework for Cocos Creator, Cocos Creator is a game development tool focused on content creation, which has realized features like thorough scriptability, componentization and data driven, etc. on the basis of Cocos2d-x.
