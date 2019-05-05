@@ -1,4 +1,9 @@
-# 需要先把builtin-custom目录下的所有东西拷贝到creator editor的builtin目录下
+# Cocos Creator 2.0.9定制
+
+编辑器版本是2.0.9
+
+需要先把builtin-custom目录下的所有东西拷贝到creator editor的builtin目录下
+
 
 # Cocos Creator Engine Framework
 
