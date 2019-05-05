@@ -37,10 +37,31 @@ let Toggle = cc.Class({
     editor: CC_EDITOR && {
         menu: 'i18n:MAIN_MENU.component.ui/Toggle',
         help: 'i18n:COMPONENT.help_url.toggle',
-        inspector: 'packages://inspector/inspectors/comps/toggle.js',
+        inspector: 'packages://custom-comp/comps/toggle.js',
     },
 
     properties: {
+		/**
+         * 是否反转target的active
+         * @property {Boolean} reverseTargetActive
+         */
+		_N$reverseTargetActive:false,
+		reverseTargetActive:{
+			get: function () {
+                return this._N$reverseTargetActive;
+            },
+			set: function (value) {
+				value = !!value;
+				if(this._N$reverseTargetActive===value)return;
+				this._N$reverseTargetActive = value;
+				if(this.target){
+					if(this._N$reverseTargetActive||this.oldTargetActive===undefined)this.oldTargetActive = !!this.target.active;
+					else this.target.active = this.oldTargetActive;
+					this._updateCheckMark();
+				}
+			},
+			tooltip: '是否反转target的active',
+		},
         /**
          * !#en When this value is true, the check mark component will be enabled, otherwise
          * the check mark component will be disabled.
@@ -97,7 +118,7 @@ let Toggle = cc.Class({
          */
         checkMark: {
             default: null,
-            type: cc.Sprite,
+            type: cc.Node,
             tooltip: CC_DEV && 'i18n:COMPONENT.toggle.checkMark'
         },
 
@@ -171,20 +192,24 @@ let Toggle = cc.Class({
 
     _updateCheckMark: function () {
         if (this.checkMark) {
-            this.checkMark.node.active = !!this.isChecked;
+            this.checkMark.active = !!this.isChecked;
         }
+		if(this.target&&this.reverseTargetActive){
+			this.target.active = !this.isChecked;
+		}
     },
 
     _updateDisabledState: function () {
         this._super();
 
         if (this.checkMark) {
-            this.checkMark.setState(0);
-        }
-        if (this.enableAutoGrayEffect) {
-            if (this.checkMark && !this.interactable) {
-                this.checkMark.setState(1);
-            }
+            this.spCheckMark = this.spCheckMark || this.checkMark.getComponent(cc.Sprite);
+			if(this.spCheckMark){
+				this.spCheckMark.setState(0);
+				if (this.enableAutoGrayEffect&& !this.interactable) {
+					this.spCheckMark.setState(1);
+				}
+			}
         }
     },
 

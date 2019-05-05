@@ -101,7 +101,10 @@ let VideoPlayerImpl = cc.Class({
                 return;
             }
             self._playing = false;
-            if (!self._ignorePause) {
+            if (self._ignorePause) {
+                return;
+            }
+            else {
                 self._dispatchEvent(VideoPlayerImpl.EventType.PAUSED);
             }
         };
@@ -116,11 +119,10 @@ let VideoPlayerImpl = cc.Class({
         video.addEventListener("click", cbs.click);
 
         function onCanPlay () {
-            if (self._loaded || self._playing)
+            if (self._loaded || self._loadedmeta || self._playing)
                 return;
             let video = self._video;
-            if (video.readyState === READY_STATE.HAVE_ENOUGH_DATA ||
-                video.readyState === READY_STATE.HAVE_METADATA) {
+            if (video.readyState === READY_STATE.HAVE_ENOUGH_DATA) {
                 video.currentTime = 0;
                 self._loaded = true;
                 self._dispatchEvent(VideoPlayerImpl.EventType.READY_TO_PLAY);

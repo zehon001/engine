@@ -180,7 +180,7 @@ sp.Skeleton = cc.Class({
                 if (value) {
                     this.setAnimation(0, value, this.loop);
                 }
-                else if (!this.isAnimationCached()) {
+                else {
                     this.clearTrack(0);
                     this.setToSetupPose();
                 }
@@ -394,7 +394,7 @@ sp.Skeleton = cc.Class({
         // Skeleton cache
         _skeletonCache : null,
         // Aimation name
-        _animationName : "",
+        _animationName : null,
         // Animation queue
         _animationQueue : [],
         // Head animation info of 
@@ -461,18 +461,7 @@ sp.Skeleton = cc.Class({
             this.node.setContentSize(skeletonData.width, skeletonData.height);
         }
 
-        if (!CC_EDITOR) {
-            if (this._cacheMode === AnimationCacheMode.SHARED_CACHE) {
-                this._skeletonCache = SkeletonCache.sharedCache;
-            } else if (this._cacheMode === AnimationCacheMode.PRIVATE_CACHE) {
-                this._skeletonCache = new SkeletonCache;
-            }
-        }
-
         if (this.isAnimationCached()) {
-            if (this.debugBones || this.debugSlots) {
-                cc.warn("Debug bones or slots is invalid in cached mode");
-            }
             let skeletonInfo = this._skeletonCache.getSkeletonCache(this.skeletonData._uuid, skeletonData);
             this._skeleton = skeletonInfo.skeleton;
             this._clipper = skeletonInfo.clipper;
@@ -560,8 +549,8 @@ sp.Skeleton = cc.Class({
      * 
      * @method setAnimationCacheMode
      * @param {AnimationCacheMode} cacheMode
-     * @example
-     * skeleton.setAnimationCacheMode(sp.Skeleton.AnimationCacheMode.SHARED_CACHE);
+     * * @example
+     * armatureDisplay.setAnimationCacheMode(sp.Skeleton.AnimationCacheMode.SHARED_CACHE);
      */
     setAnimationCacheMode (cacheMode) {
         if (CC_JSB) return;
@@ -584,8 +573,6 @@ sp.Skeleton = cc.Class({
     update (dt) {
         if (CC_EDITOR) return;
         if (this.paused) return;
-
-        dt *= this.timeScale * sp.timeScale;
 
         if (this.isAnimationCached()) {
 
@@ -622,7 +609,7 @@ sp.Skeleton = cc.Class({
             this._listener && this._listener.start && this._listener.start(this._startEntry);
         }
 
-        this._accTime += dt;
+        this._accTime += dt * this.timeScale;
         let frameIdx = Math.floor(this._accTime / totalTime * frameCount);
         if (frameIdx >= frameCount) {
 
@@ -652,6 +639,7 @@ sp.Skeleton = cc.Class({
         if (skeleton) {
             skeleton.update(dt);
             if (state) {
+                dt *= this.timeScale;
                 state.update(dt);
                 state.apply(skeleton);
             }
@@ -662,7 +650,7 @@ sp.Skeleton = cc.Class({
         // Destroyed and restored in Editor
         if (!this._material) {
             this._boundingBox = cc.rect();
-            this._material = new SpineMaterial();
+	        this._material = new SpineMaterial();
             this._materialCache = {};
         }
     },
@@ -814,7 +802,6 @@ sp.Skeleton = cc.Class({
     setSkin (skinName) {
         if (this.isAnimationCached()) {
             this._skeletonCache.resetSkeleton();
-            this._skeletonCache.updateSkeletonSkin(this.skeletonData._uuid, skinName);
             this._animationName && (this.animation = this._animationName);
         } else {
             if (this._skeleton) {
@@ -948,7 +935,6 @@ sp.Skeleton = cc.Class({
      * @return {sp.spine.TrackEntry}
      */
     addAnimation (trackIndex, name, loop, delay) {
-        delay = delay || 0;
         if (this.isAnimationCached()) {
             if (trackIndex !== 0) {
                 cc.warn("Track index can not greater than 0 in cached mode.");
@@ -956,6 +942,7 @@ sp.Skeleton = cc.Class({
             this._animationQueue.push({animationName : name, loop: loop, delay : delay});
         } else {
             if (this._skeleton) {
+                delay = delay || 0;
                 var animation = this._skeleton.data.findAnimation(name);
                 if (!animation) {
                     cc.logID(7510, name);
@@ -1215,6 +1202,18 @@ sp.Skeleton = cc.Class({
         let data = this.skeletonData.getRuntimeData();
         if (!data) return;
         
+        if (!CC_EDITOR) {
+            if (this._cacheMode === AnimationCacheMode.SHARED_CACHE) {
+                this._skeletonCache = SkeletonCache.sharedCache;
+            } else if (this._cacheMode === AnimationCacheMode.PRIVATE_CACHE) {
+                this._skeletonCache = new SkeletonCache;
+            }
+        }
+
+        if (this.isAnimationCached() && (this.debugBones || this.debugSlots)) {
+            cc.warn("Debug bones or slots is invalid in cached mode");
+        }
+
         try {
             this.setSkeletonData(data);
             if (!this.isAnimationCached()) {

@@ -267,15 +267,12 @@ Audio.State = {
     };
 
     proto.getState = function () {
-        let elem = this._element;
-        if (!CC_WECHATGAME && !CC_QQPLAY && elem) {
+        if (!CC_WECHATGAME && !CC_QQPLAY) {
             // HACK: in some browser, audio may not fire 'ended' event
             // so we need to force updating the Audio state
-            if (Audio.State.PLAYING === this._state && elem.paused) {
+            let elem = this._element;
+            if (elem && Audio.State.PLAYING === this._state && elem.paused) {
                 this._state = Audio.State.STOPPED;
-            }
-            else if (Audio.State.STOPPED === this._state && !elem.paused) {
-                this._state = Audio.State.PLAYING;
             }
         }
         return this._state;

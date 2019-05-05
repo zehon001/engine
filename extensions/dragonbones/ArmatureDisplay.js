@@ -453,29 +453,6 @@ let ArmatureDisplay = cc.Class({
 
     /**
      * !#en
-     * The key of dragonbones cache data, which is regard as 'dragonbonesName', when you want to change dragonbones cloth.
-     * !#zh 
-     * 缓存龙骨数据的key值，换装的时会使用到该值，作为dragonbonesName使用
-     * @method getArmatureKey
-     * @example
-     * let factory = dragonBones.CCFactory.getInstance();
-     * let needChangeSlot = needChangeArmature.armature().getSlot("changeSlotName");
-     * factory.replaceSlotDisplay(toChangeArmature.getArmatureKey(), "armatureName", "slotName", "displayName", needChangeSlot);
-     */
-    getArmatureKey () {
-        return this._armatureKey;
-    },
-
-    onRestore () {
-        // Destroyed and restored in Editor
-        if (!this._material) {
-            this._material = new SpriteMaterial();
-            this._materialCache = {};
-        }
-    },
-
-    /**
-     * !#en
      * It's best to set cache mode before set property 'dragonAsset', or will waste some cpu time.
      * If set the mode in editor, then no need to worry about order problem.
      * !#zh 
@@ -484,7 +461,7 @@ let ArmatureDisplay = cc.Class({
      * 
      * @method setAnimationCacheMode
      * @param {AnimationCacheMode} cacheMode
-     * @example
+     * * @example
      * armatureDisplay.setAnimationCacheMode(dragonBones.ArmatureDisplay.AnimationCacheMode.SHARED_CACHE);
      */
     setAnimationCacheMode (cacheMode) {
@@ -535,8 +512,7 @@ let ArmatureDisplay = cc.Class({
             this._eventTarget && this._eventTarget.emit(dragonBones.EventObject.START);
         }
 
-        let globalTimeScale = dragonBones.timeScale;
-        this._accTime += dt * this.timeScale * globalTimeScale;
+        this._accTime += dt * this.timeScale;
         let frameIdx = Math.floor(this._accTime / totalTime * frameCount);
         if (frameIdx >= frameCount) {
 

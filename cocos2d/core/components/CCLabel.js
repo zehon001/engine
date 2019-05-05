@@ -31,7 +31,6 @@ const RenderFlow = require('../renderer/render-flow');
 const SpriteMaterial = renderEngine.SpriteMaterial;
 const dynamicAtlasManager = require('../renderer/utils/dynamic-atlas/manager');
 const LabelFrame = require('../renderer/utils/label/label-frame');
-const opacityFlag = RenderFlow.FLAG_COLOR | RenderFlow.FLAG_OPACITY;
 /**
  * !#en Enum for text alignment.
  * !#zh 文本横向对齐类型
@@ -253,8 +252,7 @@ let Label = cc.Class({
             readonly: true,
             get () {
                 return this._actualFontSize;
-            },
-            tooltip: CC_DEV && 'i18n:COMPONENT.label.actualFontSize',
+            }
         },
 
         _fontSize: 40,
@@ -447,12 +445,6 @@ let Label = cc.Class({
         },
 
         _spacingX: 0,
-
-        /**
-         * !#en The spacing of the x axis between characters.
-         * !#zh 文字之间 x 轴的间距。
-         * @property {Number} spacingX
-         */
         spacingX: {
             get () {
                 return this._spacingX;
@@ -460,8 +452,7 @@ let Label = cc.Class({
             set (value) {
                 this._spacingX = value;
                 this._updateRenderData();
-            },
-            tooltip: CC_DEV && 'i18n:COMPONENT.label.spacingX',
+            }
         },
 
         //For compatibility with v2.0.x temporary reservation.
@@ -647,7 +638,8 @@ let Label = cc.Class({
         let font = this.font;
         if (font instanceof cc.BitmapFont) {
             this._super();
-        } else {
+        }
+        else {
             this._updateRenderData();
             this.node._renderFlag &= ~RenderFlow.FLAG_COLOR;
         }

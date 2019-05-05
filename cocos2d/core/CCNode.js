@@ -944,10 +944,9 @@ var Node = cc.Class({
                 return this._opacity;
             },
             set (value) {
-                value = cc.misc.clampf(value, 0, 255);
                 if (this._opacity !== value) {
                     this._opacity = value;
-                    this._renderFlag |= RenderFlow.FLAG_OPACITY;
+                    this._renderFlag |= RenderFlow.FLAG_OPACITY | RenderFlow.FLAG_COLOR;
                 }
             },
             range: [0, 255]
@@ -1186,6 +1185,7 @@ var Node = cc.Class({
         for (; i < len; i++) {
             sibling = siblings[i];
             sibling._updateOrderOfArrival();
+            eventManager._setDirtyForNode(sibling);
         }
         parent._delaySort();
     },
@@ -3011,10 +3011,6 @@ var Node = cc.Class({
      */
     sortAllChildren () {
         if (this._reorderChildDirty) {
-            // Optimize reordering event code to fix problems with setting zindex
-            // https://github.com/cocos-creator/2d-tasks/issues/1186
-            eventManager._setDirtyForNode(this);
-
             this._reorderChildDirty = false;
             var _children = this._children;
             if (_children.length > 1) {

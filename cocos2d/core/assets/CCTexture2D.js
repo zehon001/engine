@@ -659,7 +659,7 @@ var Texture2D = cc.Class({
     setMipmap (mipmap) {
         if (this._hasMipmap !== mipmap) {
             var opts = _getSharedOptions();
-            opts.mipmap = mipmap;
+            opts.hasMipmap = mipmap;
             this.update(opts);
         }
     },
@@ -736,10 +736,9 @@ var Texture2D = cc.Class({
     _clearImage () {
         // wechat game platform will cache image parsed data, 
         // so image will consume much more memory than web, releasing it
-        // Release image in loader cache
-        // native image element has not image.id, release by image.src.
-        cc.loader.removeItem(this._image.id || this._image.src);
         this._image.src = "";
+        // Release image in loader cache
+        cc.loader.removeItem(this._image.id);
     }
 });
 
